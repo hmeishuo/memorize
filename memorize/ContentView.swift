@@ -12,58 +12,76 @@ struct ContentView: View {
     @State var emojiCount = 6
     var body: some View {
         VStack {
-            HStack {
-                ForEach(emojis[0..<emojiCount], id: \.self) { emoji in
-                    CardView(content: emoji)
-                }
-            }
-            HStack {
-                Button(action: {
-                    emojiCount -= 1
-                }, label: {
-                    Text("Remove Card")
-                })
-                
-                Spacer()
-                
-                Button(action: {
-                    emojiCount += 1
-                }, label: {
-                    Text("Add Card")
-                })
-                
-            }
-            
+            cardList
+            Spacer()
+            actionButton
         }
         .padding()
         .foregroundStyle(.orange)
     }
-}
-
-struct CardView: View {
-    @State var isFaceUp: Bool = true
-    var content: String
-    var body: some View {
-        ZStack {
-            let shape = RoundedRectangle(cornerRadius: 20)
-            if isFaceUp {
-                shape.fill(Color.white)
-                shape.strokeBorder(lineWidth: 3)
-                Text(content).font(.largeTitle)
-            }
-            else {
-                shape
+    var cardList: some View {
+        ScrollView{
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 85))], spacing: 10) {
+                ForEach(emojis[0..<emojiCount], id: \.self){ emoji in
+                    CardView(content: emoji)
+                        .aspectRatio(2/3, contentMode: .fit)
+                        .padding(4)
+                }
             }
         }
-        //.onTapGesture(perform: {
-        //    isFaceUp = !isFaceUp
-        //})
-        .onTapGesture {
-            isFaceUp = !isFaceUp
+    }
+    var actionButton: some View {
+        HStack {
+            remove
+            Spacer()
+            add
+        }
+        .font(.largeTitle)
+    }
+    var remove: some View {
+        Button {
+            if emojiCount > 1 {
+                emojiCount -= 1
+            }
+        } label: {
+            Image(systemName: "minus.circle")
+        }
+    }
+    
+    var add: some View {
+        Button {
+            if emojiCount < emojis.count {
+                emojiCount += 1
+            }
+        } label: {
+            Image(systemName: "plus.circle")
         }
     }
 }
-
-#Preview {
-    ContentView()
-}
+    struct CardView: View {
+        @State var isFaceUp: Bool = true
+        var content: String
+        var body: some View {
+            ZStack {
+                let shape = RoundedRectangle(cornerRadius: 20)
+                if isFaceUp {
+                    shape.fill(.white)
+                    shape.strokeBorder(lineWidth: 3)
+                    Text(content)
+                        .font(.largeTitle)
+                        .minimumScaleFactor(0.01)
+                        .aspectRatio(1, contentMode: .fit)
+                }
+                else {
+                    shape
+                }
+            }
+            .onTapGesture {
+                isFaceUp = !isFaceUp
+            }
+        }
+    }
+    
+    #Preview {
+        ContentView()
+    }
