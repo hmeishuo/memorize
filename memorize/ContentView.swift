@@ -64,7 +64,7 @@ struct ContentView: View {
         var body: some View {
             ZStack {
                 let shape = RoundedRectangle(cornerRadius: 20)
-                if isFaceUp {
+                Group{
                     shape.fill(.white)
                     shape.strokeBorder(lineWidth: 3)
                     Text(content)
@@ -72,9 +72,9 @@ struct ContentView: View {
                         .minimumScaleFactor(0.01)
                         .aspectRatio(1, contentMode: .fit)
                 }
-                else {
-                    shape
-                }
+                .opacity(isFaceUp ? 1 : 0)
+                
+                shape.opacity(isFaceUp ? 0 : 1)
             }
             .onTapGesture {
                 isFaceUp = !isFaceUp
