@@ -12,22 +12,48 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
+            HStack {
+                Text(viewModel.themeName)
+                    .font(.title)
+                    .bold()
+                Spacer()
+                Text("Score: \(viewModel.score)")
+                    .font(.title2)
+                    .bold()
+            }
+            .foregroundStyle(viewModel.themeColor)
+            .padding(.horizontal)
+            
             cardList
                 .animation(.default, value: viewModel.cards)
             Spacer()
-            Button("Shuffle"){
-                viewModel.shuffle()
+            HStack {
+                Button("Shuffle"){
+                    viewModel.shuffle()
+                }
+                .font(.title3)
+                Spacer()
+                Button {
+                    viewModel.newGame()
+                } label: {
+                    VStack {
+                        Image(systemName: "arrow.clockwise.circle.fill")
+                            .font(.system(size: 40))
+                        Text("New Game")
+                            .font(.headline)
+                    }
+                }
             }
-            .font(.largeTitle)
+            .padding()
         }
         .padding()
-        .foregroundStyle(.orange)
+        .foregroundStyle(viewModel.themeColor)
     }
     var cardList: some View {
         ScrollView{
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 85), spacing: 0)], spacing: 0) {
                 ForEach(viewModel.cards){card in
-                    CardView(card: card)
+                    CardView(card: card, themeColor: viewModel.themeColor)
                         .aspectRatio(2/3, contentMode: .fit)
                         .padding(4)
                         .onTapGesture {
@@ -40,6 +66,7 @@ struct ContentView: View {
 }
     struct CardView: View {
         var card: MemoryGame<String>.Card
+        var themeColor: Color
         
         var body: some View {
             ZStack {
@@ -54,7 +81,8 @@ struct ContentView: View {
                 }
                 .opacity(card.isFaceUp ? 1 : 0)
                 
-                shape.opacity(card.isFaceUp ? 0 : 1)
+                shape.fill(themeColor)
+                    .opacity(card.isFaceUp ? 0 : 1)
             }
             .opacity(card.isMatched && !card.isFaceUp ? 0 : 1)
         }
